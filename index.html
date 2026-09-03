@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GridNova Energy — HSEQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: {
+      brand:{50:'#ECFBF4',100:'#D2F5E3',200:'#A6EBCA',300:'#6BDCAB',400:'#3FC98D',500:'#20B277',600:'#12965F',700:'#0F7A4F',800:'#125F40',900:'#123F30'},
+      ink:'#0E1512', mute:'#5C6B63', line:'#E3E7E3', paper:'#EDEFEC', card:'#FFFFFF',
+      amber:{DEFAULT:'#E79B32', dk:'#8A5A0C'}, danger:'#D64545'
+    },
+    fontFamily:{ sans:['Tajawal','Inter','sans-serif'], mono:['JetBrains Mono','monospace'] },
+    boxShadow:{ soft:'0 6px 26px -14px rgba(14,21,18,.28)' }
+  }}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body{font-family:'Tajawal','Inter',sans-serif;overflow-x:clip;}
+  html[lang="en"] body{font-family:'Inter','Tajawal',sans-serif;}
+  .num{font-family:'JetBrains Mono','Tajawal',monospace;font-weight:700;letter-spacing:-.3px;}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .nav-item{display:flex;align-items:center;gap:.7rem;width:100%;padding:.62rem .8rem;border-radius:.8rem;font-weight:700;font-size:.875rem;color:#3a4a42;transition:.15s;text-align:start;background:transparent;border:none;cursor:pointer;}
+  .nav-item:hover{background:#EAF3EE;color:#0E1512;}
+  .nav-item.is-active{background:#0E1512;color:#fff;}
+  .nav-item.is-active i{color:#3FC98D;}
+
+  .btn-ghost{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #E3E7E3;background:#fff;color:#0E1512;padding:.5rem .8rem;border-radius:.7rem;font-weight:700;font-size:.78rem;cursor:pointer;transition:.15s;}
+  .btn-ghost:hover{border-color:#12965F;background:#F3FAF6;}
+  .btn-ghost.danger:hover{border-color:#D64545;color:#D64545;background:#FDEDED;}
+  .btn-primary{width:100%;margin-top:.5rem;padding:.85rem 1.5rem;border-radius:.85rem;border:none;font-weight:800;font-size:.95rem;color:#fff;background:linear-gradient(120deg,#0E1512,#12965F);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+  .btn-primary:hover{filter:brightness(1.1);}
+
+  .seg-btn{padding:.4rem .85rem;border-radius:.55rem;font-weight:700;font-size:.78rem;color:#5C6B63;cursor:pointer;border:none;background:transparent;}
+  .seg-btn.seg-active{background:#0E1512;color:#fff;}
+
+  .sec-h{display:flex;align-items:center;gap:.4rem;margin:0 0 .8rem;font-weight:800;font-size:.95rem;color:#0E1512;}
+  .lbl{display:block;margin-bottom:.35rem;font-size:.75rem;font-weight:700;color:#5C6B63;}
+  .inp{width:100%;padding:.6rem .75rem;border:1px solid #E3E7E3;border-radius:.6rem;background:#fbfcfb;font:inherit;font-size:.82rem;color:#0E1512;transition:.15s;}
+  .inp:focus{outline:none;border-color:#12965F;box-shadow:0 0 0 3px rgba(18,150,95,.14);}
+
+  @media (max-width:767px){
+    #sidebar{position:fixed;top:0;bottom:0;right:0;left:auto;height:auto;width:min(280px,84vw);display:none;box-shadow:-18px 0 40px -20px rgba(14,21,18,.4);}
+    html[dir="ltr"] #sidebar{right:auto;left:0;box-shadow:18px 0 40px -20px rgba(14,21,18,.4);}
+    #sidebar.sidebar-open{display:flex;}
+  }
+  #confirmModal{opacity:0;pointer-events:none;transition:.2s;}
+  #confirmModal.show{opacity:1;pointer-events:auto;}
+  #toast{opacity:0;pointer-events:none;transform:translate(-50%,0);transition:.25s;}
+  #toast.show{opacity:1;transform:translate(-50%,-8px);}
+
+  .pdf-hide{display:none!important;}
+  ::-webkit-scrollbar{height:8px;width:8px;}
+  ::-webkit-scrollbar-thumb{background:#cfd6cf;border-radius:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* ---- animated home background ---- */
+  .home-hero{position:relative;overflow:hidden;border-radius:1.75rem;isolation:isolate;max-width:100%;
+    background:linear-gradient(150deg,#0E1512 0%,#123f30 55%,#0f7a4f 100%);}
+  .home-hero .aurora{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;filter:blur(55px);opacity:.9;}
+  .home-hero .aurora span{position:absolute;display:block;border-radius:50%;mix-blend-mode:screen;}
+  .home-hero .aurora span:nth-child(1){width:44%;height:44%;left:6%;top:2%;background:#3FC98D;animation:blob1 16s ease-in-out infinite;}
+  .home-hero .aurora span:nth-child(2){width:38%;height:38%;right:4%;top:12%;background:#6BDCAB;animation:blob2 20s ease-in-out infinite;}
+  .home-hero .aurora span:nth-child(3){width:50%;height:50%;left:24%;bottom:-14%;background:#12965F;animation:blob3 24s ease-in-out infinite;}
+  .home-hero .grid-lines{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.14;
+    background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+    background-size:46px 46px;mask-image:radial-gradient(120% 80% at 50% 0%,#000 40%,transparent 78%);}
+  .home-hero .spark{position:absolute;width:7px;height:7px;border-radius:50%;background:#D2F5E3;box-shadow:0 0 14px 2px rgba(210,245,227,.7);opacity:.7;}
+  .home-hero .spark:nth-child(1){left:14%;top:26%;animation:drift 9s ease-in-out infinite;}
+  .home-hero .spark:nth-child(2){right:18%;top:60%;animation:drift 12s ease-in-out infinite reverse;}
+  .home-hero .spark:nth-child(3){left:42%;top:80%;animation:drift 14s ease-in-out infinite;}
+  @keyframes blob1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(12%,8%) scale(1.15);}66%{transform:translate(-8%,4%) scale(.9);}}
+  @keyframes blob2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-14%,10%) scale(1.2);}}
+  @keyframes blob3{0%,100%{transform:translate(0,0) scale(1);}40%{transform:translate(10%,-8%) scale(1.1);}80%{transform:translate(-6%,6%) scale(.95);}}
+  @keyframes drift{0%,100%{transform:translate(0,0);}50%{transform:translate(18px,-24px);}}
+  .home-card{transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;}
+  .home-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px -20px rgba(14,21,18,.35);border-color:#3FC98D;}
+  @media (prefers-reduced-motion:reduce){
+    .home-hero .aurora span,.home-hero .spark{animation:none!important;}
+  }
+  @media print{ #sidebar,#navBackdrop,#mobileBar,.no-print,#toast{display:none!important;} main{padding:0!important;} }
+</style>
+</head>
+<body class="bg-paper text-ink">
+<div class="flex min-h-screen">
+
+  <aside id="sidebar" class="sidebar z-40 flex h-screen w-[260px] shrink-0 flex-col overflow-y-auto border-s border-line bg-card p-4 transition-transform duration-300 md:sticky md:top-0">
+    <div class="flex items-center gap-3">
+      <div class="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white font-extrabold shadow-soft">GN</div>
+      <div class="min-w-0">
+        <div class="font-extrabold text-[14px] leading-tight text-ink" data-i18n="appTitle">GridNova Energy — منصة HSEQ</div>
+        <div class="text-[11px] text-mute leading-snug mt-0.5" data-i18n="appSubtitle">التقارير التنفيذية اليومية والأسبوعية للسلامة والصحة والبيئة</div>
+      </div>
+    </div>
+
+    <nav class="mt-7 flex flex-col gap-1">
+      <button class="nav-item is-active no-print" data-tab="home"><i data-lucide="layout-dashboard" class="w-[18px] h-[18px]"></i><span data-i18n="tabHome">الرئيسية</span></button>
+      <button class="nav-item no-print" data-tab="daily"><i data-lucide="calendar-days" class="w-[18px] h-[18px]"></i><span data-i18n="tabDaily">التقرير اليومي</span></button>
+      <button class="nav-item no-print" data-tab="weekly"><i data-lucide="bar-chart-3" class="w-[18px] h-[18px]"></i><span data-i18n="tabWeekly">التقرير الأسبوعي</span></button>
+      <button class="nav-item no-print" data-tab="add"><i data-lucide="plus-circle" class="w-[18px] h-[18px]"></i><span data-i18n="tabAdd">إضافة تقرير جديد</span></button>
+    </nav>
+
+    <div class="mt-auto space-y-3 pt-6">
+      <button id="langToggleBtn" type="button" class="no-print flex w-full items-center justify-center gap-2 rounded-xl border border-line py-2.5 text-sm font-bold text-ink transition hover:bg-brand-50">EN</button>
+      <div class="rounded-xl bg-ink px-3.5 py-3 text-[11px] leading-relaxed text-white/70">
+        <span class="font-extrabold text-brand-300">SAFE OPERATIONS</span> · STRONG CONTROLS<br><span class="font-extrabold text-white">ZERO HARM</span>
+      </div>
+    </div>
+  </aside>
+
+  <div id="navBackdrop" class="fixed inset-0 z-30 hidden bg-ink/50 md:hidden"></div>
+
+  <main class="min-w-0 flex-1">
+    <div id="mobileBar" class="md:hidden sticky top-0 z-20 flex items-center justify-between border-b border-line bg-card/90 px-4 py-3 backdrop-blur">
+      <div class="flex items-center gap-2">
+        <div class="grid h-8 w-8 place-items-center rounded-lg bg-ink text-white text-[11px] font-extrabold">GN</div>
+        <span class="font-extrabold text-sm">HSEQ</span>
+      </div>
+      <button id="navToggle" type="button" class="rounded-lg border border-line p-2"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    </div>
+
+    <div class="mx-auto max-w-[1400px] p-4 md:p-8">
+
+      <!-- HOME PANEL -->
+      <section id="panel-home" class="panel active">
+        <div class="home-hero p-7 md:p-12 text-white">
+          <div class="aurora"><span></span><span></span><span></span></div>
+          <div class="grid-lines"></div>
+          <i class="spark"></i><i class="spark"></i><i class="spark"></i>
+          <div class="relative">
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[12px] font-bold backdrop-blur">
+              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-brand-300"></i><span data-i18n="homeBadge">منصة السلامة والصحة والبيئة</span>
+            </div>
+            <h1 class="mt-5 text-3xl md:text-5xl font-extrabold leading-tight"><span data-i18n="homeTitle">GridNova Energy</span></h1>
+            <p class="mt-3 max-w-xl text-sm md:text-base text-white/80" data-i18n="homeLede">لوحة تحكم تنفيذية للتقارير اليومية والأسبوعية لأداء HSEQ عبر جميع مشاريع المحطات.</p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <button onclick="document.querySelector('[data-tab=&quot;daily&quot;]').click()" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-extrabold text-ink transition hover:bg-brand-100">
+                <i data-lucide="calendar-days" class="h-4 w-4"></i><span data-i18n="homeGoDaily">فتح التقرير اليومي</span></button>
+              <button onclick="document.querySelector('[data-tab=&quot;weekly&quot;]').click()" class="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-white/15">
+                <i data-lucide="bar-chart-3" class="h-4 w-4"></i><span data-i18n="homeGoWeekly">التقرير الأسبوعي</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div id="homeStats" class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4"></div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+          <button onclick="document.querySelector('[data-tab=&quot;daily&quot;]').click()" class="home-card rounded-2xl border border-line bg-card p-5 text-start shadow-soft">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-700"><i data-lucide="calendar-days" class="h-5 w-5"></i></div>
+            <div class="mt-3 font-extrabold text-ink" data-i18n="tabDaily">التقرير اليومي</div>
+            <div class="mt-1 text-[12px] text-mute" data-i18n="homeCardDaily">ملخص تنفيذي يومي لكل مشروع: العمالة، التصاريح، الأنشطة والملاحظات.</div>
+          </button>
+          <button onclick="document.querySelector('[data-tab=&quot;weekly&quot;]').click()" class="home-card rounded-2xl border border-line bg-card p-5 text-start shadow-soft">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-700"><i data-lucide="bar-chart-3" class="h-5 w-5"></i></div>
+            <div class="mt-3 font-extrabold text-ink" data-i18n="tabWeekly">التقرير الأسبوعي</div>
+            <div class="mt-1 text-[12px] text-mute" data-i18n="homeCardWeekly">اتجاهات الأسبوع ورسوم بيانية وتقدّم المشاريع خلال ستة أيام عمل.</div>
+          </button>
+          <button onclick="document.querySelector('[data-tab=&quot;add&quot;]').click()" class="home-card rounded-2xl border border-line bg-card p-5 text-start shadow-soft">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-700"><i data-lucide="plus-circle" class="h-5 w-5"></i></div>
+            <div class="mt-3 font-extrabold text-ink" data-i18n="tabAdd">إضافة تقرير جديد</div>
+            <div class="mt-1 text-[12px] text-mute" data-i18n="homeCardAdd">إدخال بيانات يوم جديد أو تعديل تقرير قائم بسهولة.</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- DAILY PANEL -->
+      <section id="panel-daily" class="panel">
+        <div class="mb-5 flex items-center gap-2">
+          <i data-lucide="calendar-days" class="w-5 h-5 text-brand-500"></i>
+          <h1 class="text-lg font-extrabold text-ink"><span data-i18n="tabDaily">التقرير اليومي</span></h1>
+        </div>
+        <div id="dateRail" class="no-print mb-4 flex gap-2 overflow-x-auto pb-2"></div>
+        <div id="dailyReport"></div>
+      </section>
+
+      <!-- WEEKLY PANEL -->
+      <section id="panel-weekly" class="panel">
+        <div class="mb-5 flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-5 h-5 text-brand-500"></i>
+          <h1 class="text-lg font-extrabold text-ink"><span data-i18n="tabWeekly">التقرير الأسبوعي</span></h1>
+        </div>
+        <div id="weekSelect" class="no-print mb-4 flex gap-2 overflow-x-auto pb-2"></div>
+        <div id="weeklyReport"></div>
+      </section>
+
+      <!-- ADD PANEL -->
+      <section id="panel-add" class="panel">
+        <div class="rounded-3xl border border-line bg-card p-5 md:p-7 shadow-soft">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h3 class="text-base font-extrabold text-ink" id="addPanelTitle" data-i18n="addTitleDefault">إضافة تقرير جديد</h3>
+            <button class="btn-ghost no-print" id="newReportBtn" type="button"><i data-lucide="file-plus" class="w-3.5 h-3.5"></i><span data-i18n="newReportBtn">＋ تقرير جديد فارغ</span></button>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="lbl" data-i18n="labelDate">تاريخ التقرير</label>
+              <input type="date" id="f-date" class="inp">
+            </div>
+            <div>
+              <label class="lbl" data-i18n="labelIncidents">حوادث تسجيلية / توقف عمل</label>
+              <div class="flex gap-3">
+                <input type="number" id="f-recordable" value="0" min="0" class="inp" data-i18n-placeholder="phRecordable">
+                <input type="number" id="f-stoppage" value="0" min="0" class="inp" data-i18n-placeholder="phStoppage">
+              </div>
+            </div>
+          </div>
+          <div id="projFields"></div>
+          <button class="btn-primary" id="saveBtn"><i data-lucide="save" class="w-4 h-4"></i><span data-i18n="saveBtn">حفظ التقرير</span></button>
+          <p class="text-[12px] text-mute mt-3 leading-loose" data-i18n="addHint">يُحسب إجمالي العمالة وتصاريح العمل والملاحظات تلقائياً من بيانات المشاريع أدناه. عند اكتمال 6 أيام عمل ضمن نفس الأسبوع (سبت–خميس) يظهر التقرير الأسبوعي كاملاً تلقائياً. لتعديل تقرير موجود، افتحه من "التقرير اليومي" واضغط "تعديل".</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="fixed bottom-6 left-1/2 z-[60] rounded-xl bg-ink px-6 py-3 text-[13px] font-medium text-white shadow-2xl"></div>
+
+<div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-ink/60 p-4">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
+    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-danger/12 text-danger"><i data-lucide="trash-2" class="w-5 h-5"></i></div>
+    <h4 class="mb-2 font-bold text-ink" data-i18n="modalTitle">حذف التقرير</h4>
+    <p id="confirmModalText" class="mb-5 text-[13px] leading-relaxed text-mute"></p>
+    <div class="flex gap-3">
+      <button class="flex-1 rounded-xl bg-paper py-2.5 font-bold text-mute" id="modalCancelBtn" type="button" data-i18n="modalCancel">إلغاء</button>
+      <button class="flex-1 rounded-xl bg-danger py-2.5 font-bold text-white" id="modalConfirmBtn" type="button" data-i18n="modalConfirm">حذف نهائياً</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== i18n ===================== */
+let LANG = 'ar';
+
+const I18N = {
+  ar:{
+    appTitle:'GridNova Energy — منصة HSEQ',
+    appSubtitle:'التقارير التنفيذية اليومية والأسبوعية للسلامة والصحة والبيئة',
+    tabHome:'الرئيسية', tabDaily:'التقرير اليومي', tabWeekly:'التقرير الأسبوعي', tabAdd:'إضافة تقرير جديد',
+    homeBadge:'منصة السلامة والصحة والبيئة', homeTitle:'GridNova Energy',
+    homeLede:'لوحة تحكم تنفيذية للتقارير اليومية والأسبوعية لأداء HSEQ عبر جميع مشاريع المحطات.',
+    homeGoDaily:'فتح التقرير اليومي', homeGoWeekly:'التقرير الأسبوعي',
+    homeCardDaily:'ملخص تنفيذي يومي لكل مشروع: العمالة، التصاريح، الأنشطة والملاحظات.',
+    homeCardWeekly:'اتجاهات الأسبوع ورسوم بيانية وتقدّم المشاريع خلال ستة أيام عمل.',
+    homeCardAdd:'إدخال بيانات يوم جديد أو تعديل تقرير قائم بسهولة.',
+    homeStatDays:'أيام مُسجّلة', homeStatLatest:'آخر تقرير', homeStatManpower:'عمالة آخر يوم', homeStatStatus:'الحالة العامة',
+    homeStatusOk:'كل المشاريع طبيعية', homeStatusWatch:'مشروع تحت المتابعة', homeNoData:'لا توجد تقارير بعد',
+    dailyTitle:'الملخص التنفيذي اليومي — HSEQ', dailySubtitlePrefix:'تحديث المشاريع',
+    statusAllNormal:'✓ جميع المشاريع طبيعية', statusHasMonitor:'⚠ يوجد مشروع تحت المتابعة',
+    btnEdit:'✎ تعديل', btnDelete:'🗑 حذف', btnPdf:'⬇ تنزيل PDF',
+    kpiProjects:'مشاريع تعمل', kpiManpower:'إجمالي العمالة', kpiPtws:'تصاريح عمل صادرة',
+    kpiObservations:'إجمالي الملاحظات', kpiRecordable:'حوادث تسجيلية', kpiStoppage:'توقف عمل',
+    thProject:'المشروع', thManpower:'العمالة', thPtws:'التصاريح', thProgress:'الإنجاز',
+    thActivities:'الأنشطة الرئيسية', thObservations:'الملاحظات', thStatus:'الحالة',
+    badgeNormal:'طبيعي', badgeMonitor:'متابعة', riskMed:'متوسط', riskLow:'منخفض', riskNone:'لا ملاحظات',
+    contractLabel:'عقد رقم', emptyDaily:'لا يوجد تقرير لهذا اليوم بعد. أضِفه من تبويب "إضافة تقرير جديد".',
+    weeklyTitle:'الملخص التنفيذي الأسبوعي — HSEQ', weeklySubtitlePrefix:'أداء المشاريع',
+    weekCompleteBadge:'✓ أسبوع مكتمل (6 أيام)', weekProgressPrefix:'متابعة —',
+    kpiAvgManpower:'متوسط العمالة اليومي', kpiTotalPtws:'إجمالي تصاريح العمل',
+    chartTitle:'توزيع الملاحظات حسب اليوم', legendMed:'متوسطة الخطورة', legendLow:'منخفضة الخطورة',
+    trendTitle:'الاتجاه اليومي خلال الأسبوع', thDay:'اليوم', thPtwsCol:'تصاريح العمل', thObsCol:'ملاحظات', thRiskDist:'توزيع المخاطر',
+    progressTitle:'تقدّم المشاريع خلال الأسبوع', thWeekStart:'بداية الأسبوع', thWeekEnd:'نهاية الأسبوع', thChange:'التغيّر', flatBadge:'ثابت',
+    fillNotePrefix:'⚠ هذا الأسبوع يحتوي حالياً على', fillNoteSuffix:'من أصل 6 أيام عمل. يكتمل التقرير الأسبوعي تلقائياً عند توفر 6 أيام (سبت–خميس).',
+    emptyWeekNoData:'لا توجد بيانات كافية بعد لعرض تقرير أسبوعي.', emptyWeekThis:'لا توجد بيانات لهذا الأسبوع.',
+    addTitleDefault:'إضافة تقرير جديد', addTitleEditPrefix:'تعديل تقرير', addTitleImportReview:'مراجعة تقرير مستورد من صورة',
+    newReportBtn:'＋ تقرير جديد فارغ', labelDate:'تاريخ التقرير', labelIncidents:'حوادث تسجيلية / توقف عمل',
+    phRecordable:'حوادث تسجيلية', phStoppage:'توقف عمل',
+    labelManpower:'العمالة', labelPtws:'تصاريح العمل (PTWs)', labelProgress:'نسبة الإنجاز %', labelStatus:'الحالة',
+    optNormal:'طبيعي (NORMAL)', optMonitor:'تحت المتابعة (MONITOR)',
+    labelMed:'ملاحظات متوسطة الخطورة', labelLow:'ملاحظات منخفضة الخطورة',
+    labelActivities:'الأنشطة الرئيسية (سطر لكل نشاط)', phActivities:'مثال: شد وتسليح حديد وتشوين',
+    saveBtn:'حفظ التقرير',
+    addHint:'يُحسب إجمالي العمالة وتصاريح العمل والملاحظات تلقائياً من بيانات المشاريع أدناه. عند اكتمال 6 أيام عمل ضمن نفس الأسبوع (سبت–خميس) يظهر التقرير الأسبوعي كاملاً تلقائياً. لتعديل تقرير موجود، افتحه من "التقرير اليومي" واضغط "تعديل".',
+    contractPrefix:'عقد',
+    importTitle:'استيراد تقرير من صورة',
+    importDesc:'ارفعي صورة تقرير HSEQ اليومي (نفس تنسيق GridNova)، وسيتم تحليلها تلقائياً واستخراج الأرقام والأنشطة لكل مشروع، ثم تُعرض عليك جاهزة في تبويب "إضافة تقرير جديد" للمراجعة — ولا تُحفظ إلا بعد ما تضغطي "حفظ التقرير" بنفسك.',
+    importBtn:'🔍 استخراج البيانات من الصورة',
+    importChooseFirst:'اختاري صورة أولاً.', importLoading:'جارٍ تحليل الصورة، عطونا لحظات...',
+    importSuccess:'تم الاستخراج بنجاح ✓ راجعي البيانات في تبويب "إضافة تقرير جديد" قبل الحفظ.',
+    importFail:'تعذّر استخراج البيانات من الصورة. تأكدي أن الصورة واضحة وكاملة وحاولي مجدداً، أو أدخلي البيانات يدوياً من تبويب "إضافة تقرير جديد".',
+    modalTitle:'حذف التقرير', modalTextPrefix:'هل أنت متأكدة من حذف تقرير', modalTextSuffix:'؟ هذا الإجراء لا يمكن التراجع عنه.',
+    modalCancel:'إلغاء', modalConfirm:'حذف نهائياً',
+    toastChooseDate:'الرجاء اختيار التاريخ', toastSavedOk:'تم حفظ التقرير بنجاح', toastSavedSession:'تم الحفظ لهذه الجلسة فقط',
+    toastEditPrompt:'عدّل البيانات ثم اضغط "حفظ التقرير"', toastDeleted:'تم حذف التقرير',
+    toastPdfPreparing:'جاري تجهيز PDF...', toastPdfOk:'تم تنزيل PDF بنجاح', toastPdfFail:'تعذّر إنشاء PDF، جرّب مرة أخرى',
+    toastPdfLibFail:'تعذّر تحميل أداة PDF — تأكد من الاتصال بالإنترنت وحاول مجدداً', toastNotFoundReport:'تعذّر إيجاد التقرير',
+    toastExtractSuccess:'تم استخراج البيانات — راجعيها ثم احفظي',
+    dow:['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'],
+    months:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
+  },
+  en:{
+    appTitle:'GridNova Energy — HSEQ Platform',
+    appSubtitle:'Daily & weekly executive HSE reporting',
+    tabHome:'Home', tabDaily:'Daily Report', tabWeekly:'Weekly Report', tabAdd:'Add New Report',
+    homeBadge:'Health, Safety & Environment Platform', homeTitle:'GridNova Energy',
+    homeLede:'Executive dashboard for daily and weekly HSEQ performance across all substation projects.',
+    homeGoDaily:'Open Daily Report', homeGoWeekly:'Weekly Report',
+    homeCardDaily:'Daily executive summary per project: manpower, permits, activities and observations.',
+    homeCardWeekly:'Weekly trends, charts and project progress over six working days.',
+    homeCardAdd:'Enter a new day of data or edit an existing report with ease.',
+    homeStatDays:'Recorded Days', homeStatLatest:'Latest Report', homeStatManpower:'Latest Manpower', homeStatStatus:'Overall Status',
+    homeStatusOk:'All projects normal', homeStatusWatch:'Project under monitoring', homeNoData:'No reports yet',
+    dailyTitle:'Daily Executive Summary — HSEQ', dailySubtitlePrefix:'Projects Update',
+    statusAllNormal:'✓ All projects normal', statusHasMonitor:'⚠ One or more projects under monitoring',
+    btnEdit:'✎ Edit', btnDelete:'🗑 Delete', btnPdf:'⬇ Download PDF',
+    kpiProjects:'Active Projects', kpiManpower:'Total Manpower', kpiPtws:'PTWs Issued',
+    kpiObservations:'Total Observations', kpiRecordable:'Recordable Incidents', kpiStoppage:'Work Stoppage',
+    thProject:'Project', thManpower:'Manpower', thPtws:'PTWs', thProgress:'Progress',
+    thActivities:'Key Activities', thObservations:'Observations', thStatus:'Status',
+    badgeNormal:'Normal', badgeMonitor:'Monitor', riskMed:'Medium', riskLow:'Low', riskNone:'No observations',
+    contractLabel:'Contract #', emptyDaily:'No report for this day yet. Add one from the "Add New Report" tab.',
+    weeklyTitle:'Weekly Executive Summary — HSEQ', weeklySubtitlePrefix:'Projects Performance',
+    weekCompleteBadge:'✓ Week Complete (6 days)', weekProgressPrefix:'In Progress —',
+    kpiAvgManpower:'Avg. Daily Manpower', kpiTotalPtws:'Total PTWs Issued',
+    chartTitle:'Observations by Day', legendMed:'Medium Risk', legendLow:'Low Risk',
+    trendTitle:'Daily Trend This Week', thDay:'Day', thPtwsCol:'PTWs', thObsCol:'Observations', thRiskDist:'Risk Distribution',
+    progressTitle:'Project Progress This Week', thWeekStart:'Week Start', thWeekEnd:'Week End', thChange:'Change', flatBadge:'Flat',
+    fillNotePrefix:'⚠ This week currently has', fillNoteSuffix:'of 6 working days. The weekly report completes automatically once 6 days (Sat–Thu) are available.',
+    emptyWeekNoData:'Not enough data yet to show a weekly report.', emptyWeekThis:'No data for this week.',
+    addTitleDefault:'Add New Report', addTitleEditPrefix:'Editing report for', addTitleImportReview:'Review Imported Report',
+    newReportBtn:'＋ New Blank Report', labelDate:'Report Date', labelIncidents:'Recordable Incidents / Work Stoppage',
+    phRecordable:'Recordable incidents', phStoppage:'Work stoppage',
+    labelManpower:'Manpower', labelPtws:'Work Permits (PTWs)', labelProgress:'Progress %', labelStatus:'Status',
+    optNormal:'Normal', optMonitor:'Monitor',
+    labelMed:'Medium Risk Observations', labelLow:'Low Risk Observations',
+    labelActivities:'Key Activities (one per line)', phActivities:'e.g. Steel fixing & shuttering',
+    saveBtn:'Save Report',
+    addHint:'Total manpower, PTWs and observations are calculated automatically from the project data below. Once 6 working days (Sat–Thu) in the same week are complete, the weekly report appears automatically. To edit an existing report, open it from "Daily Report" and click "Edit".',
+    contractPrefix:'Contract',
+    importTitle:'Import Report from Image',
+    importDesc:'Upload a photo of a daily HSEQ report (same GridNova format). It will be analyzed automatically to extract the figures and activities for each project, then shown to you ready in the "Add New Report" tab for review — nothing is saved until you click "Save Report" yourself.',
+    importBtn:'🔍 Extract Data from Image',
+    importChooseFirst:'Please choose an image first.', importLoading:'Analyzing image, please wait...',
+    importSuccess:'Extraction successful ✓ Review the data in the "Add New Report" tab before saving.',
+    importFail:'Could not extract data from the image. Make sure the image is clear and complete and try again, or enter the data manually from "Add New Report".',
+    modalTitle:'Delete Report', modalTextPrefix:'Are you sure you want to delete the report for', modalTextSuffix:'? This action cannot be undone.',
+    modalCancel:'Cancel', modalConfirm:'Delete Permanently',
+    toastChooseDate:'Please select a date', toastSavedOk:'Report saved successfully', toastSavedSession:'Saved for this session only',
+    toastEditPrompt:'Edit the data then click "Save Report"', toastDeleted:'Report deleted',
+    toastPdfPreparing:'Preparing PDF...', toastPdfOk:'PDF downloaded successfully', toastPdfFail:'Could not create PDF, please try again',
+    toastPdfLibFail:'Could not load the PDF tool — check your internet connection and try again', toastNotFoundReport:'Could not find the report',
+    toastExtractSuccess:'Data extracted — review then save',
+    dow:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    months:['January','February','March','April','May','June','July','August','September','October','November','December']
+  }
+};
+
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+  });
+}
+
+async function loadLang(){
+  if(window.storage){
+    try{
+      const r = await window.storage.get('hseq:settings:lang', false);
+      if(r && r.value) LANG = r.value;
+    }catch(e){}
+  }
+}
+async function persistLang(){
+  if(window.storage){
+    try{ await window.storage.set('hseq:settings:lang', LANG, false); }catch(e){}
+  }
+}
+
+function setLanguage(lang){
+  LANG = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langToggleBtn').textContent = lang === 'ar' ? 'EN' : 'عربي';
+  applyStaticI18n();
+  persistLang();
+  renderHome();
+  renderDateRail();
+  renderDaily();
+  renderWeekSelect();
+  renderWeekly();
+  refreshIcons();
+}
+
+/* ===================== Data ===================== */
+const PROJECT_TEMPLATE = [
+  {key:'qurtubah', name:'QURTUBAH SS – 8347', contract:'4400023252'},
+  {key:'alrain', name:'AL RAIN SS – 8532', contract:'4400021314 (Consultant: Eng. Arshad Hussain)'},
+  {key:'khurais', name:'KHURAIS OHTL RETIREMENT', contract:'4400021316'},
+  {key:'addayir', name:'AD DAYIR 2 SS – JIZAN', contract:'4400021846'},
+  {key:'kfsc', name:'KING FAHAD SPORTS CITY SS', contract:'4400023706'}
+];
+
+const SEED = [
+{date:'2026-08-29', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:33,ptws:4,progress:17.56,activities:'شد وتسليح حديد وتشوين\nتركيب وفك السقالات\nأعمال العزل المائي',med:1,low:3,status:'normal'},
+  alrain:{manpower:33,ptws:4,progress:55,activities:'أعمال إصلاح\nتركيب شبكة التأريض\nردم ودمك\nنظافة عامة للموقع',med:0,low:2,status:'normal'},
+  khurais:{manpower:40,ptws:2,progress:83.05,activities:'سحب الكابلات\nترشيح زيت المحولات',med:0,low:2,status:'normal'},
+  addayir:{manpower:43,ptws:13,progress:44.1,activities:'تركيب مجرى الكابلات في GIS\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nتصريح دخول أماكن مغلقة\nإصلاح وتنظيف ودهان',med:3,low:4,status:'monitor'},
+  kfsc:{manpower:32,ptws:4,progress:13.17,activities:'ردم ودمك\nأعمال البناء\nأعمال العزل المائي\nقص وثني حديد التسليح',med:0,low:3,status:'normal'}
+}},
+{date:'2026-08-30', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:35,ptws:3,progress:17.56,activities:'شد وتسليح حديد وتشوين\nتركيب وفك السقالات\nأعمال العزل المائي',med:1,low:2,status:'normal'},
+  alrain:{manpower:33,ptws:4,progress:55,activities:'أعمال إصلاح\nتركيب شبكة التأريض\nردم ودمك\nنظافة عامة للموقع',med:1,low:1,status:'normal'},
+  khurais:{manpower:38,ptws:3,progress:83.05,activities:'سحب الكابلات\nترشيح زيت المحولات\nتركيب المواسير',med:0,low:4,status:'normal'},
+  addayir:{manpower:43,ptws:16,progress:44.1,activities:'تركيب مجرى الكابلات في GIS\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nتصريح دخول أماكن مغلقة\nإصلاح وتنظيف ودهان',med:2,low:5,status:'normal'},
+  kfsc:{manpower:39,ptws:3,progress:13.17,activities:'ردم ودمك\nأعمال البناء\nأعمال العزل المائي\nقص وثني حديد التسليح',med:1,low:3,status:'normal'}
+}},
+{date:'2026-08-31', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:34,ptws:3,progress:17.56,activities:'شد وتسليح حديد وتشوين\nتركيب وفك السقالات\nطبقة عزل مائي\nثني وقص حديد التسليح',med:2,low:3,status:'normal'},
+  alrain:{manpower:33,ptws:4,progress:56,activities:'تركيب شبكة التأريض\nردم ودمك\nأعمال إصلاح\nنظافة عامة للموقع',med:1,low:0,status:'normal'},
+  khurais:{manpower:29,ptws:1,progress:83.06,activities:'سحب الكابلات',med:0,low:1,status:'normal'},
+  addayir:{manpower:43,ptws:15,progress:44.1,activities:'تركيب مجرى الكابلات AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nتصريح دخول أماكن مغلقة، إصلاح ودهان',med:3,low:5,status:'normal'},
+  kfsc:{manpower:29,ptws:3,progress:13.17,activities:'ردم ودمك\nتركيب شبكة التأريض\nقص وثني حديد التسليح',med:0,low:4,status:'normal'}
+}},
+{date:'2026-09-02', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:17,ptws:3,progress:17.56,activities:'شد وتسليح حديد وتشوين\nثني وقص حديد التسليح\nأعمال لحام وقص',med:2,low:2,status:'normal'},
+  alrain:{manpower:33,ptws:4,progress:56,activities:'تركيب شبكة التأريض\nردم ودمك\nإصلاح ونظافة\nتركيب إنارة',med:1,low:2,status:'normal'},
+  khurais:{manpower:32,ptws:3,progress:84,activities:'سحب وترتيب الكابلات\nأعمال العزل المائي\nشدة وتسليح',med:0,low:3,status:'normal'},
+  addayir:{manpower:41,ptws:14,progress:44.1,activities:'تركيب مجرى الكابلات AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nتصريح دخول أماكن مغلقة، تنظيف وردم',med:4,low:6,status:'monitor'},
+  kfsc:{manpower:28,ptws:2,progress:13.63,activities:'شدة الأساسات وأعمال حديد التسليح\nقص وثني حديد التسليح',med:1,low:2,status:'normal'}
+}}
+];
+
+let DB = {};
+let currentDate = null;
+let currentWeekKey = null;
+let editingOriginalDate = null;
+let pendingDeleteDate = null;
+let dailyStatusFilter = 'all';
+let charts = [];
+
+/* ===================== UI helpers (presentation only) ===================== */
+if(window.Chart){
+  Chart.defaults.font.family = "'Tajawal','Inter',sans-serif";
+  Chart.defaults.color = '#5C6B63';
+}
+function refreshIcons(){ try{ if(window.lucide) lucide.createIcons(); }catch(e){} }
+function emptyBox(msg){
+  return `<div class="rounded-2xl border border-dashed border-line bg-card p-12 text-center text-sm text-mute">${msg}</div>`;
+}
+function destroyCharts(){ charts.forEach(c=>{ try{ c.destroy(); }catch(e){} }); charts = []; }
+function chartBase(){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'bottom', rtl:LANG==='ar', labels:{usePointStyle:true, boxWidth:8, boxHeight:8, padding:14, font:{size:11}}},
+      tooltip:{rtl:LANG==='ar'}
+    }
+  };
+}
+function applyDailyFilter(){
+  document.querySelectorAll('#dailyTbody tr').forEach(tr=>{
+    tr.style.display = (dailyStatusFilter==='all' || tr.dataset.status===dailyStatusFilter) ? '' : 'none';
+  });
+}
+function kpiCard(val,label,icon,tone){
+  return `<div class="rounded-2xl border border-line bg-card p-4 shadow-soft">
+    <div class="flex items-center justify-between">
+      <span class="text-[11px] font-bold uppercase tracking-wide text-mute">${label}</span>
+      <i data-lucide="${icon}" class="h-4 w-4 ${tone||'text-brand-500'}"></i>
+    </div>
+    <div class="mt-2 num text-2xl md:text-3xl font-extrabold ${tone||'text-ink'}">${val}</div>
+  </div>`;
+}
+
+function computeTotals(entry){
+  let manpower=0, ptws=0, med=0, low=0;
+  PROJECT_TEMPLATE.forEach(p=>{
+    const d = entry.projects[p.key];
+    if(!d) return;
+    manpower += Number(d.manpower)||0;
+    ptws += Number(d.ptws)||0;
+    med += Number(d.med)||0;
+    low += Number(d.low)||0;
+  });
+  return {manpower, ptws, med, low, total: med+low, high:0};
+}
+
+function fmtDate(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  const months = I18N[LANG].months;
+  return {day:d.getDate(), month:months[d.getMonth()], year:d.getFullYear(), dow:d.getDay()};
+}
+function dowName(i){ return I18N[LANG].dow[i]; }
+
+function weekKeyFor(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  const dow = d.getDay();
+  const diffToSat = (dow + 1) % 7;
+  const sat = new Date(d);
+  sat.setDate(d.getDate() - diffToSat);
+  return sat.toISOString().slice(0,10);
+}
+function weekDates(satStr){
+  const sat = new Date(satStr+'T00:00:00');
+  const days=[];
+  for(let i=0;i<6;i++){
+    const dd = new Date(sat); dd.setDate(sat.getDate()+i);
+    days.push(dd.toISOString().slice(0,10));
+  }
+  return days;
+}
+
+const FIREBASE_PROJECT_ID = 'hseq-gridnova';
+const FIREBASE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/hseq_reports`;
+
+function fsDocToEntry(doc){
+  try{
+    const raw = doc.fields && doc.fields.data && doc.fields.data.stringValue;
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+
+async function fbListReports(){
+  try{
+    const res = await fetch(`${FIREBASE_BASE}?pageSize=300`);
+    if(!res.ok) throw new Error('firestore list failed '+res.status);
+    const data = await res.json();
+    const out = {};
+    (data.documents || []).forEach(doc=>{
+      const entry = fsDocToEntry(doc);
+      if(entry && entry.date) out[entry.date] = entry;
+    });
+    return out;
+  }catch(e){
+    console.warn('firestore list failed', e);
+    return null;
+  }
+}
+
+async function fbSaveReport(entry){
+  try{
+    const url = `${FIREBASE_BASE}/${entry.date}`;
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(entry) } } })
+    });
+    return res.ok;
+  }catch(e){
+    console.warn('firestore save failed', e);
+    return false;
+  }
+}
+
+async function fbDeleteReport(date){
+  try{
+    const res = await fetch(`${FIREBASE_BASE}/${date}`, {method:'DELETE'});
+    return res.ok;
+  }catch(e){
+    console.warn('firestore delete failed', e);
+    return false;
+  }
+}
+
+async function loadDB(){
+  DB = {};
+
+  const fbData = await fbListReports();
+  if(fbData && Object.keys(fbData).length > 0){
+    DB = fbData;
+    try{
+      if(window.storage){
+        for(const date in DB){
+          await window.storage.set('hseq:'+date, JSON.stringify(DB[date]), false);
+        }
+      }
+    }catch(e){}
+    return;
+  }
+
+  if(fbData !== null){
+    for(const s of SEED){
+      await fbSaveReport(s);
+      DB[s.date] = s;
+    }
+    try{
+      if(window.storage){
+        for(const s of SEED){ await window.storage.set('hseq:'+s.date, JSON.stringify(s), false); }
+      }
+    }catch(e){}
+    return;
+  }
+
+  try{
+    if(!window.storage) throw new Error('no storage api');
+
+    let listRes = await window.storage.list('hseq:', false);
+    let keys = (listRes && listRes.keys) || [];
+    keys = keys.filter(k=>k.startsWith('hseq:') && !k.startsWith('hseq:settings'));
+
+    if(keys.length === 0){
+      for(const s of SEED){
+        try{ await window.storage.set('hseq:'+s.date, JSON.stringify(s), false); }
+        catch(e){ console.warn('seed set failed', s.date, e); }
+      }
+      listRes = await window.storage.list('hseq:', false);
+      keys = (listRes && listRes.keys) || [];
+      keys = keys.filter(k=>k.startsWith('hseq:') && !k.startsWith('hseq:settings'));
+    }
+
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, false);
+        if(r && r.value){
+          const entry = JSON.parse(r.value);
+          DB[entry.date] = entry;
+        }
+      }catch(e){ console.warn('get failed', k, e); }
+    }
+  }catch(e){
+    console.warn('storage unavailable, using in-memory fallback', e);
+  }
+
+  if(Object.keys(DB).length === 0){
+    SEED.forEach(s=>{ DB[s.date] = s; });
+  }
+}
+
+function sortedDates(){ return Object.keys(DB).sort(); }
+
+function renderDateRail(){
+  const rail = document.getElementById('dateRail');
+  rail.innerHTML = '';
+  sortedDates().forEach(dt=>{
+    const info = fmtDate(dt);
+    const active = dt===currentDate;
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'flex-none min-w-[84px] rounded-2xl border px-4 py-2.5 text-center transition ' +
+      (active ? 'bg-ink border-ink shadow-soft' : 'bg-card border-line hover:border-brand-400');
+    chip.innerHTML =
+      `<div class="text-[11px] font-bold ${active?'text-brand-300':'text-mute'}">${dowName(info.dow)}</div>
+       <div class="num text-lg font-extrabold ${active?'text-white':'text-ink'}">${info.day}</div>
+       <div class="text-[11px] ${active?'text-white/60':'text-mute'}">${info.month}</div>`;
+    chip.onclick = ()=>{ currentDate = dt; renderDateRail(); renderDaily(); };
+    rail.appendChild(chip);
+  });
+}
+
+function riskLine(med, low){
+  let parts = [];
+  if(med>0) parts.push(`<span class="font-bold text-amber-dk">${med} ${t('riskMed')}</span>`);
+  if(low>0) parts.push(`<span class="font-bold text-brand-700">${low} ${t('riskLow')}</span>`);
+  if(parts.length===0) parts.push(`<span class="text-mute">${t('riskNone')}</span>`);
+  return parts.join(' <span class="text-line">·</span> ');
+}
+
+function renderDaily(){
+  const box = document.getElementById('dailyReport');
+  if(!currentDate || !DB[currentDate]){
+    box.innerHTML = emptyBox(t('emptyDaily'));
+    refreshIcons();
+    return;
+  }
+  const entry = DB[currentDate];
+  const totals = computeTotals(entry);
+  const info = fmtDate(currentDate);
+  const hasMonitor = PROJECT_TEMPLATE.some(p=> entry.projects[p.key] && entry.projects[p.key].status==='monitor');
+
+  let rows = '';
+  PROJECT_TEMPLATE.forEach(p=>{
+    const d = entry.projects[p.key];
+    if(!d) return;
+    const badge = d.status==='monitor'
+      ? `<span class="inline-flex items-center gap-1 rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber-dk"><i data-lucide="alert-triangle" class="h-3 w-3"></i>${t('badgeMonitor')}</span>`
+      : `<span class="inline-flex items-center gap-1 rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-700"><i data-lucide="check" class="h-3 w-3"></i>${t('badgeNormal')}</span>`;
+    const acts = (d.activities||'').split('\n').filter(Boolean)
+      .map(a=>`<div class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-brand-400"></span><span>${a}</span></div>`).join('');
+    rows += `<tr data-status="${d.status}" class="border-b border-line last:border-0 transition hover:bg-brand-50/60">
+      <td class="p-3 align-top"><div class="font-bold text-ink">${p.name}</div><div class="mt-0.5 text-[11px] text-mute">${t('contractLabel')} ${p.contract}</div></td>
+      <td class="p-3 align-top num text-ink">${d.manpower}</td>
+      <td class="p-3 align-top num text-ink">${d.ptws}</td>
+      <td class="p-3 align-top">
+        <div class="flex items-center gap-2">
+          <div class="h-1.5 w-16 overflow-hidden rounded-full bg-line"><div class="h-full rounded-full bg-brand-500" style="width:${Math.min(100, Number(d.progress)||0)}%"></div></div>
+          <span class="num text-xs text-mute">${d.progress}%</span>
+        </div>
+      </td>
+      <td class="p-3 align-top space-y-1 text-[13px]">${acts}</td>
+      <td class="p-3 align-top text-[13px]">${riskLine(d.med, d.low)}</td>
+      <td class="p-3 align-top">${badge}</td>
+    </tr>`;
+  });
+
+  box.innerHTML = `
+    <div class="rounded-3xl border border-line bg-card p-5 shadow-soft md:p-7" id="printDaily">
+      <div class="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
+        <div>
+          <div class="text-xs font-bold text-brand-600">/ ${t('dailySubtitlePrefix')}</div>
+          <h2 class="mt-1 text-xl font-extrabold text-ink md:text-2xl">${t('dailyTitle')}</h2>
+          <div class="mt-1 text-[13px] text-mute">${info.day} ${info.month} ${info.year} · ${dowName(info.dow)}</div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${hasMonitor?'bg-amber/15 text-amber-dk':'bg-brand-100 text-brand-700'}">
+            <i data-lucide="${hasMonitor?'alert-triangle':'shield-check'}" class="h-3.5 w-3.5"></i>${hasMonitor? t('statusHasMonitor') : t('statusAllNormal')}</span>
+          <button class="btn-ghost no-print" onclick="editReport('${currentDate}')"><i data-lucide="pencil" class="h-3.5 w-3.5"></i>${t('btnEdit')}</button>
+          <button class="btn-ghost danger no-print" onclick="confirmDelete('${currentDate}')"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i>${t('btnDelete')}</button>
+          <button class="btn-ghost no-print" onclick="downloadAsPDF('printDaily','HSEQ-Daily-${currentDate}')"><i data-lucide="download" class="h-3.5 w-3.5"></i>${t('btnPdf')}</button>
+        </div>
+      </div>
+
+      <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        ${kpiCard(5, t('kpiProjects'), 'building-2')}
+        ${kpiCard(totals.manpower, t('kpiManpower'), 'users')}
+        ${kpiCard(totals.ptws, t('kpiPtws'), 'file-check')}
+        ${kpiCard(totals.total, t('kpiObservations'), 'clipboard-list')}
+        ${kpiCard(entry.recordable, t('kpiRecordable'), 'alert-octagon', entry.recordable>0?'text-danger':'text-brand-500')}
+        ${kpiCard(entry.stoppage, t('kpiStoppage'), 'octagon-x', entry.stoppage>0?'text-danger':'text-brand-500')}
+      </div>
+
+      <div class="no-print mt-6 flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-mute">${LANG==='ar'?'تصفية حسب الحالة:':'Filter by status:'}</span>
+        <div class="inline-flex rounded-xl border border-line bg-paper p-1" id="dailyFilterSeg">
+          <button data-f="all" class="seg-btn">${LANG==='ar'?'الكل':'All'}</button>
+          <button data-f="normal" class="seg-btn">${t('badgeNormal')}</button>
+          <button data-f="monitor" class="seg-btn">${t('badgeMonitor')}</button>
+        </div>
+      </div>
+
+      <div class="mt-3 overflow-x-auto rounded-2xl border border-line">
+        <table class="w-full min-w-[820px] text-start text-[13px]">
+          <thead>
+            <tr class="bg-ink text-[12px] text-white">
+              <th class="p-3 text-start font-bold">${t('thProject')}</th>
+              <th class="p-3 text-start font-bold">${t('thManpower')}</th>
+              <th class="p-3 text-start font-bold">${t('thPtws')}</th>
+              <th class="p-3 text-start font-bold">${t('thProgress')}</th>
+              <th class="p-3 text-start font-bold">${t('thActivities')}</th>
+              <th class="p-3 text-start font-bold">${t('thObservations')}</th>
+              <th class="p-3 text-start font-bold">${t('thStatus')}</th>
+            </tr>
+          </thead>
+          <tbody id="dailyTbody" class="bg-card">${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const seg = document.getElementById('dailyFilterSeg');
+  seg.querySelectorAll('.seg-btn').forEach(b=>{
+    b.classList.toggle('seg-active', b.dataset.f===dailyStatusFilter);
+    b.onclick = ()=>{
+      dailyStatusFilter = b.dataset.f;
+      seg.querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('seg-active', x.dataset.f===dailyStatusFilter));
+      applyDailyFilter();
+    };
+  });
+  applyDailyFilter();
+  refreshIcons();
+}
+
+function renderWeekSelect(){
+  const sel = document.getElementById('weekSelect');
+  const dates = sortedDates();
+  const weeks = [...new Set(dates.map(weekKeyFor))].sort();
+  sel.innerHTML = '';
+  if(!currentWeekKey || !weeks.includes(currentWeekKey)) currentWeekKey = weeks[weeks.length-1];
+  weeks.forEach(wk=>{
+    const wDates = weekDates(wk).filter(d=>DB[d]);
+    const info1 = fmtDate(wk);
+    const lastDay = weekDates(wk)[5];
+    const info2 = fmtDate(lastDay);
+    const active = wk===currentWeekKey;
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'flex-none rounded-xl border px-4 py-2 text-[13px] font-bold transition ' +
+      (active ? 'bg-ink text-white border-ink' : 'bg-card text-mute border-line hover:border-brand-400');
+    pill.textContent = `${info1.day} – ${info2.day} ${info2.month} (${wDates.length}/6)`;
+    pill.onclick = ()=>{ currentWeekKey = wk; renderWeekSelect(); renderWeekly(); };
+    sel.appendChild(pill);
+  });
+}
+
+function renderWeekly(){
+  const box = document.getElementById('weeklyReport');
+  destroyCharts();
+  if(!currentWeekKey){ box.innerHTML = emptyBox(t('emptyWeekNoData')); refreshIcons(); return; }
+  const days = weekDates(currentWeekKey).filter(d=>DB[d]);
+  if(days.length===0){ box.innerHTML = emptyBox(t('emptyWeekThis')); refreshIcons(); return; }
+
+  const isComplete = days.length>=6;
+  let noteHtml = '';
+  if(!isComplete){
+    noteHtml = `<div class="no-print mb-4 flex items-center gap-2 rounded-xl bg-amber/15 px-4 py-3 text-[13px] font-medium text-amber-dk">
+      <i data-lucide="info" class="h-4 w-4 flex-none"></i><span>${t('fillNotePrefix')} ${days.length} ${t('fillNoteSuffix')}</span></div>`;
+  }
+
+  let sumManpower=0, sumPtws=0, sumMed=0, sumLow=0, sumRecordable=0, sumStoppage=0;
+  const dailyRows = days.map(d=>{
+    const e = DB[d]; const tt = computeTotals(e);
+    sumManpower+=tt.manpower; sumPtws+=tt.ptws; sumMed+=tt.med; sumLow+=tt.low;
+    sumRecordable+=e.recordable; sumStoppage+=e.stoppage;
+    return {d, info: fmtDate(d), tt};
+  });
+  const avgManpower = Math.round(sumManpower/days.length);
+  const maxObs = Math.max(1, ...dailyRows.map(r=>r.tt.total));
+
+  const dailyRowsHtml = dailyRows.map(r=>`
+    <tr class="border-b border-line last:border-0 hover:bg-brand-50/60">
+      <td class="p-3">${dowName(r.info.dow)} ${r.info.day} ${r.info.month}</td>
+      <td class="p-3 num">${r.tt.manpower}</td>
+      <td class="p-3 num">${r.tt.ptws}</td>
+      <td class="p-3 num">${r.tt.total}</td>
+      <td class="p-3 text-[13px]">${riskLine(r.tt.med, r.tt.low)}</td>
+    </tr>`).join('');
+
+  let projRows = '';
+  PROJECT_TEMPLATE.forEach(p=>{
+    const first = DB[days[0]].projects[p.key];
+    const last = DB[days[days.length-1]].projects[p.key];
+    if(!first || !last) return;
+    const delta = (last.progress - first.progress);
+    const up = delta>0.001;
+    const badgeClass = up ? 'bg-brand-100 text-brand-700' : 'bg-paper text-mute';
+    const badgeText = up ? `▲ +${delta.toFixed(2)}%` : t('flatBadge');
+    projRows += `<tr class="border-b border-line last:border-0 hover:bg-brand-50/60">
+      <td class="p-3"><div class="font-bold text-ink">${p.name}</div></td>
+      <td class="p-3 num">${first.progress}%</td>
+      <td class="p-3 num">${last.progress}%</td>
+      <td class="p-3"><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-bold ${badgeClass}">${badgeText}</span></td>
+    </tr>`;
+  });
+
+  const firstInfo = fmtDate(days[0]);
+  const lastInfo = fmtDate(days[days.length-1]);
+  const weekBadge = isComplete ? t('weekCompleteBadge') : `${t('weekProgressPrefix')} ${days.length}/6`;
+
+  box.innerHTML = `
+    ${noteHtml}
+    <div class="rounded-3xl border border-line bg-card p-5 shadow-soft md:p-7" id="printWeekly">
+      <div class="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
+        <div>
+          <div class="text-xs font-bold text-brand-600">/ ${t('weeklySubtitlePrefix')}</div>
+          <h2 class="mt-1 text-xl font-extrabold text-ink md:text-2xl">${t('weeklyTitle')}</h2>
+          <div class="mt-1 text-[13px] text-mute">${firstInfo.day} ${firstInfo.month} – ${lastInfo.day} ${lastInfo.month} ${lastInfo.year}</div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-3 py-1.5 text-xs font-bold text-brand-700"><i data-lucide="calendar-check" class="h-3.5 w-3.5"></i>${weekBadge}</span>
+          <button class="btn-ghost no-print" onclick="downloadAsPDF('printWeekly','HSEQ-Weekly-${currentWeekKey}')"><i data-lucide="download" class="h-3.5 w-3.5"></i>${t('btnPdf')}</button>
+        </div>
+      </div>
+
+      <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        ${kpiCard(5, t('kpiProjects'), 'building-2')}
+        ${kpiCard(avgManpower, t('kpiAvgManpower'), 'users')}
+        ${kpiCard(sumPtws, t('kpiTotalPtws'), 'file-check')}
+        ${kpiCard(sumMed+sumLow, t('kpiObservations'), 'clipboard-list')}
+        ${kpiCard(sumRecordable, t('kpiRecordable'), 'alert-octagon', sumRecordable>0?'text-danger':'text-brand-500')}
+        ${kpiCard(sumStoppage, t('kpiStoppage'), 'octagon-x', sumStoppage>0?'text-danger':'text-brand-500')}
+      </div>
+
+      <div class="mt-7 grid gap-5 lg:grid-cols-2">
+        <div class="rounded-2xl border border-line p-4">
+          <h3 class="sec-h">/ ${t('chartTitle')}</h3>
+          <div class="relative h-[260px]"><canvas id="obsChartCanvas"></canvas></div>
+          <div class="mt-3 flex gap-4 text-xs text-mute">
+            <span class="inline-flex items-center gap-1.5"><i class="h-2.5 w-2.5 rounded-sm" style="background:#E79B32"></i>${t('legendMed')}</span>
+            <span class="inline-flex items-center gap-1.5"><i class="h-2.5 w-2.5 rounded-sm" style="background:#3FC98D"></i>${t('legendLow')}</span>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-line p-4">
+          <h3 class="sec-h">/ ${t('trendTitle')}</h3>
+          <div class="relative h-[260px]"><canvas id="trendChartCanvas"></canvas></div>
+        </div>
+      </div>
+
+      <h3 class="sec-h mt-8">/ ${t('trendTitle')}</h3>
+      <div class="overflow-x-auto rounded-2xl border border-line">
+        <table class="w-full min-w-[640px] text-start text-[13px]">
+          <thead><tr class="bg-ink text-[12px] text-white">
+            <th class="p-3 text-start font-bold">${t('thDay')}</th>
+            <th class="p-3 text-start font-bold">${t('thManpower')}</th>
+            <th class="p-3 text-start font-bold">${t('thPtwsCol')}</th>
+            <th class="p-3 text-start font-bold">${t('thObsCol')}</th>
+            <th class="p-3 text-start font-bold">${t('thRiskDist')}</th>
+          </tr></thead>
+          <tbody class="bg-card">${dailyRowsHtml}</tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-h mt-8">/ ${t('progressTitle')}</h3>
+      <div class="overflow-x-auto rounded-2xl border border-line">
+        <table class="w-full min-w-[560px] text-start text-[13px]">
+          <thead><tr class="bg-ink text-[12px] text-white">
+            <th class="p-3 text-start font-bold">${t('thProject')}</th>
+            <th class="p-3 text-start font-bold">${t('thWeekStart')}</th>
+            <th class="p-3 text-start font-bold">${t('thWeekEnd')}</th>
+            <th class="p-3 text-start font-bold">${t('thChange')}</th>
+          </tr></thead>
+          <tbody class="bg-card">${projRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  try{
+    if(window.Chart){
+      const labels = dailyRows.map(r=>`${dowName(r.info.dow)} ${r.info.day}`);
+
+      const o1 = chartBase();
+      o1.scales = {
+        x:{stacked:true, grid:{display:false}},
+        y:{stacked:true, beginAtZero:true, ticks:{precision:0}, grid:{color:'#EEF1EE'}}
+      };
+      o1.plugins.legend.display = false;
+      charts.push(new Chart(document.getElementById('obsChartCanvas'), {
+        type:'bar',
+        data:{ labels, datasets:[
+          {label:t('legendMed'), data:dailyRows.map(r=>r.tt.med), backgroundColor:'#E79B32', borderRadius:4, maxBarThickness:34},
+          {label:t('legendLow'), data:dailyRows.map(r=>r.tt.low), backgroundColor:'#3FC98D', borderRadius:4, maxBarThickness:34}
+        ]},
+        options:o1
+      }));
+
+      const o2 = chartBase();
+      o2.interaction = {mode:'index', intersect:false};
+      o2.scales = {
+        x:{grid:{display:false}},
+        y:{beginAtZero:true, ticks:{precision:0}, grid:{color:'#EEF1EE'}, title:{display:true, text:t('thManpower'), font:{size:10}}},
+        y1:{beginAtZero:true, position:(LANG==='ar'?'left':'right'), ticks:{precision:0}, grid:{drawOnChartArea:false}, title:{display:true, text:t('thPtwsCol'), font:{size:10}}}
+      };
+      charts.push(new Chart(document.getElementById('trendChartCanvas'), {
+        type:'line',
+        data:{ labels, datasets:[
+          {label:t('thManpower'), data:dailyRows.map(r=>r.tt.manpower), borderColor:'#12965F', backgroundColor:'rgba(18,150,95,.12)', fill:true, tension:.35, borderWidth:2, pointRadius:3, yAxisID:'y'},
+          {label:t('thPtwsCol'), data:dailyRows.map(r=>r.tt.ptws), borderColor:'#0E1512', backgroundColor:'rgba(14,21,18,.05)', fill:false, tension:.35, borderWidth:2, pointRadius:3, yAxisID:'y1'}
+        ]},
+        options:o2
+      }));
+    }
+  }catch(e){ console.warn('charts failed', e); }
+
+  refreshIcons();
+}
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2400);
+}
+
+async function downloadAsPDF(elId, filenameBase){
+  const el = document.getElementById(elId);
+  if(!el){ showToast(t('toastNotFoundReport')); return; }
+  if(typeof html2canvas === 'undefined' || !window.jspdf){
+    showToast(t('toastPdfLibFail'));
+    return;
+  }
+  const hidden = el.querySelectorAll('.no-print');
+  hidden.forEach(e=>e.classList.add('pdf-hide'));
+  showToast(t('toastPdfPreparing'));
+  try{
+    const canvas = await html2canvas(el, {scale:2, backgroundColor:'#ffffff', useCORS:true});
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'p', unit:'pt', format:'a4'});
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const imgWidth = pageWidth - margin*2;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    let heightLeft = imgHeight;
+    let position = margin;
+    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+    heightLeft -= (pageHeight - margin*2);
+    while(heightLeft > 0){
+      position = margin - (imgHeight - heightLeft);
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - margin*2);
+    }
+    pdf.save(`${filenameBase}.pdf`);
+    showToast(t('toastPdfOk'));
+  }catch(e){
+    console.error('pdf export failed', e);
+    showToast(t('toastPdfFail'));
+  }finally{
+    hidden.forEach(e=>e.classList.remove('pdf-hide'));
+  }
+}
+
+function resetAddForm(){
+  editingOriginalDate = null;
+  document.getElementById('addPanelTitle').textContent = t('addTitleDefault');
+  document.getElementById('f-date').valueAsDate = new Date();
+  document.getElementById('f-recordable').value = 0;
+  document.getElementById('f-stoppage').value = 0;
+  PROJECT_TEMPLATE.forEach(p=>{
+    document.getElementById(`p-${p.key}-manpower`).value = '';
+    document.getElementById(`p-${p.key}-ptws`).value = '';
+    document.getElementById(`p-${p.key}-progress`).value = '';
+    document.getElementById(`p-${p.key}-status`).value = 'normal';
+    document.getElementById(`p-${p.key}-med`).value = 0;
+    document.getElementById(`p-${p.key}-low`).value = 0;
+    document.getElementById(`p-${p.key}-activities`).value = '';
+  });
+}
+
+function editReport(date){
+  const entry = DB[date];
+  if(!entry) return;
+  editingOriginalDate = date;
+  const info = fmtDate(date);
+  document.getElementById('addPanelTitle').textContent = `${t('addTitleEditPrefix')} ${info.day} ${info.month} ${info.year}`;
+  document.getElementById('f-date').value = date;
+  document.getElementById('f-recordable').value = entry.recordable || 0;
+  document.getElementById('f-stoppage').value = entry.stoppage || 0;
+  PROJECT_TEMPLATE.forEach(p=>{
+    const d = entry.projects[p.key] || {};
+    document.getElementById(`p-${p.key}-manpower`).value = d.manpower ?? '';
+    document.getElementById(`p-${p.key}-ptws`).value = d.ptws ?? '';
+    document.getElementById(`p-${p.key}-progress`).value = d.progress ?? '';
+    document.getElementById(`p-${p.key}-status`).value = d.status || 'normal';
+    document.getElementById(`p-${p.key}-med`).value = d.med ?? 0;
+    document.getElementById(`p-${p.key}-low`).value = d.low ?? 0;
+    document.getElementById(`p-${p.key}-activities`).value = d.activities || '';
+  });
+  document.querySelector('[data-tab="add"]').click();
+  showToast(t('toastEditPrompt'));
+}
+
+function confirmDelete(date){
+  if(!date || !DB[date]) return;
+  pendingDeleteDate = date;
+  const info = fmtDate(date);
+  document.getElementById('confirmModalText').textContent =
+    `${t('modalTextPrefix')} ${info.day} ${info.month} ${info.year}${t('modalTextSuffix')}`;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+async function deleteReport(date){
+  delete DB[date];
+  await fbDeleteReport(date);
+  try{
+    if(window.storage){ await window.storage.delete('hseq:'+date, false); }
+  }catch(e){ console.warn('delete failed', e); }
+  const dates = sortedDates();
+  currentDate = dates[dates.length-1] || null;
+  renderHome(); renderDateRail(); renderDaily(); renderWeekSelect(); renderWeekly();
+  showToast(t('toastDeleted'));
+}
+
+function renderHome(){
+  const box = document.getElementById('homeStats');
+  if(!box) return;
+  const dates = sortedDates();
+  if(dates.length === 0){
+    box.innerHTML = `<div class="col-span-full rounded-2xl border border-dashed border-line bg-card p-8 text-center text-sm text-mute">${t('homeNoData')}</div>`;
+    refreshIcons();
+    return;
+  }
+  const latest = dates[dates.length-1];
+  const info = fmtDate(latest);
+  const tot = computeTotals(DB[latest]);
+  const watch = PROJECT_TEMPLATE.some(p=> DB[latest].projects[p.key] && DB[latest].projects[p.key].status === 'monitor');
+  const cell = (val,label,icon,tone)=>`
+    <div class="rounded-2xl border border-line bg-card p-4 shadow-soft">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold uppercase tracking-wide text-mute">${label}</span>
+        <i data-lucide="${icon}" class="h-4 w-4 ${tone||'text-brand-500'}"></i>
+      </div>
+      <div class="mt-2 text-base md:text-xl font-extrabold ${tone||'text-ink'}">${val}</div>
+    </div>`;
+  box.innerHTML =
+    cell(`<span class="num">${dates.length}</span>`, t('homeStatDays'), 'calendar-range') +
+    cell(`${info.day} ${info.month}`, t('homeStatLatest'), 'calendar-check') +
+    cell(`<span class="num">${tot.manpower}</span>`, t('homeStatManpower'), 'users') +
+    cell(watch ? t('homeStatusWatch') : t('homeStatusOk'), t('homeStatStatus'), watch ? 'alert-triangle' : 'shield-check', watch ? 'text-amber-dk' : 'text-brand-600');
+  refreshIcons();
+}
+
+function renderProjFields(){
+  const wrap = document.getElementById('projFields');
+  wrap.innerHTML = '';
+  PROJECT_TEMPLATE.forEach(p=>{
+    const block = document.createElement('div');
+    block.className = 'mb-4 rounded-2xl border border-line bg-paper p-4';
+    block.innerHTML = `
+      <h4 class="mb-3 text-sm font-bold text-ink">${p.name}
+        <span class="text-xs font-normal text-mute">— <span data-i18n="contractPrefix">عقد</span> ${p.contract}</span></h4>
+      <div class="mb-3 grid gap-3 sm:grid-cols-2">
+        <div><label class="lbl" data-i18n="labelManpower">العمالة</label><input type="number" id="p-${p.key}-manpower" min="0" class="inp"></div>
+        <div><label class="lbl" data-i18n="labelPtws">تصاريح العمل (PTWs)</label><input type="number" id="p-${p.key}-ptws" min="0" class="inp"></div>
+      </div>
+      <div class="mb-3 grid gap-3 sm:grid-cols-2">
+        <div><label class="lbl" data-i18n="labelProgress">نسبة الإنجاز %</label><input type="number" step="0.01" id="p-${p.key}-progress" min="0" max="100" class="inp"></div>
+        <div><label class="lbl" data-i18n="labelStatus">الحالة</label>
+          <select id="p-${p.key}-status" class="inp">
+            <option value="normal" data-i18n="optNormal">طبيعي (NORMAL)</option>
+            <option value="monitor" data-i18n="optMonitor">تحت المتابعة (MONITOR)</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-3 grid gap-3 sm:grid-cols-2">
+        <div><label class="lbl" data-i18n="labelMed">ملاحظات متوسطة الخطورة</label><input type="number" id="p-${p.key}-med" min="0" value="0" class="inp"></div>
+        <div><label class="lbl" data-i18n="labelLow">ملاحظات منخفضة الخطورة</label><input type="number" id="p-${p.key}-low" min="0" value="0" class="inp"></div>
+      </div>
+      <label class="lbl" data-i18n="labelActivities">الأنشطة الرئيسية (سطر لكل نشاط)</label>
+      <textarea id="p-${p.key}-activities" data-i18n-placeholder="phActivities" placeholder="مثال: شد وتسليح حديد وتشوين" class="inp min-h-[64px]"></textarea>
+    `;
+    wrap.appendChild(block);
+  });
+}
+
+async function saveReport(){
+  const date = document.getElementById('f-date').value;
+  if(!date){ showToast(t('toastChooseDate')); return; }
+  const entry = {
+    date,
+    recordable: Number(document.getElementById('f-recordable').value)||0,
+    stoppage: Number(document.getElementById('f-stoppage').value)||0,
+    projects: {}
+  };
+  PROJECT_TEMPLATE.forEach(p=>{
+    entry.projects[p.key] = {
+      manpower: Number(document.getElementById(`p-${p.key}-manpower`).value)||0,
+      ptws: Number(document.getElementById(`p-${p.key}-ptws`).value)||0,
+      progress: Number(document.getElementById(`p-${p.key}-progress`).value)||0,
+      status: document.getElementById(`p-${p.key}-status`).value,
+      med: Number(document.getElementById(`p-${p.key}-med`).value)||0,
+      low: Number(document.getElementById(`p-${p.key}-low`).value)||0,
+      activities: document.getElementById(`p-${p.key}-activities`).value
+    };
+  });
+
+  DB[date] = entry;
+  currentDate = date;
+
+  if(editingOriginalDate && editingOriginalDate !== date){
+    delete DB[editingOriginalDate];
+    await fbDeleteReport(editingOriginalDate);
+    try{
+      if(window.storage){ await window.storage.delete('hseq:'+editingOriginalDate, false); }
+    }catch(e){ console.warn('delete old date failed', e); }
+  }
+  editingOriginalDate = null;
+
+  const savedToFirebase = await fbSaveReport(entry);
+
+  let savedToStorage = false;
+  try{
+    if(window.storage){
+      await window.storage.set('hseq:'+date, JSON.stringify(entry), false);
+      savedToStorage = true;
+    }
+  }catch(e){
+    console.warn('save to storage failed', e);
+  }
+
+  showToast((savedToFirebase || savedToStorage) ? t('toastSavedOk') : t('toastSavedSession'));
+  renderHome();
+  renderDateRail();
+  renderDaily();
+  renderWeekSelect();
+  renderWeekly();
+  document.querySelector('[data-tab="daily"]').click();
+}
+
+function openMobileNav(){
+  document.getElementById('sidebar').classList.add('sidebar-open');
+  document.getElementById('navBackdrop').classList.remove('hidden');
+}
+function closeMobileNav(){
+  document.getElementById('sidebar').classList.remove('sidebar-open');
+  document.getElementById('navBackdrop').classList.add('hidden');
+}
+
+function setupTabs(){
+  document.querySelectorAll('[data-tab]').forEach(btn=>{
+    btn.onclick = ()=>{
+      document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('is-active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('is-active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      closeMobileNav();
+      window.scrollTo({top:0, behavior:'smooth'});
+      refreshIcons();
+    };
+  });
+}
+
+(async function init(){
+  try{
+    setupTabs();
+    renderProjFields();
+    document.getElementById('saveBtn').onclick = saveReport;
+    document.getElementById('newReportBtn').onclick = resetAddForm;
+    document.getElementById('navToggle').onclick = openMobileNav;
+    document.getElementById('navBackdrop').onclick = closeMobileNav;
+    document.getElementById('modalCancelBtn').onclick = ()=>{
+      document.getElementById('confirmModal').classList.remove('show');
+      pendingDeleteDate = null;
+    };
+    document.getElementById('modalConfirmBtn').onclick = async ()=>{
+      document.getElementById('confirmModal').classList.remove('show');
+      const d = pendingDeleteDate;
+      pendingDeleteDate = null;
+      if(d) await deleteReport(d);
+    };
+    document.getElementById('langToggleBtn').onclick = ()=>{
+      setLanguage(LANG === 'ar' ? 'en' : 'ar');
+    };
+
+    await loadLang();
+    document.documentElement.lang = LANG;
+    document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('langToggleBtn').textContent = LANG === 'ar' ? 'EN' : 'عربي';
+    applyStaticI18n();
+
+    document.getElementById('f-date').valueAsDate = new Date();
+
+    await loadDB();
+    const dates = sortedDates();
+    currentDate = dates[dates.length-1] || null;
+    renderHome();
+    renderDateRail();
+    renderDaily();
+    renderWeekSelect();
+    renderWeekly();
+    refreshIcons();
+  }catch(e){
+    console.error('init failed', e);
+    document.getElementById('dailyReport').innerHTML =
+      '<div class="rounded-2xl border border-dashed border-line bg-card p-12 text-center text-mute">Something went wrong loading the data. Please refresh and try again. / حدث خطأ غير متوقع أثناء تحميل البيانات. حدّث الصفحة وحاول مجدداً.</div>';
+  }
+})();
+</script>
+</body>
+</html>
