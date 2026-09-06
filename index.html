@@ -138,17 +138,17 @@
           <div class="aurora"><span></span><span></span><span></span></div>
           <div class="grid-lines"></div>
           <i class="spark"></i><i class="spark"></i><i class="spark"></i>
-          <div class="relative">
+          <div class="relative text-left" dir="ltr">
             <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[12px] font-bold backdrop-blur">
-              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-brand-300"></i><span data-i18n="homeBadge">منصة السلامة والصحة والبيئة</span>
+              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-brand-300"></i><span data-i18n="homeBadge" dir="rtl">منصة السلامة والصحة والبيئة</span>
             </div>
-            <h1 class="mt-5 text-3xl md:text-5xl font-extrabold leading-tight"><span data-i18n="homeTitle">GridNova Energy</span></h1>
-            <p class="mt-3 max-w-xl text-sm md:text-base text-white/80" data-i18n="homeLede">لوحة تحكم تنفيذية للتقارير اليومية والأسبوعية لأداء HSEQ عبر جميع مشاريع المحطات.</p>
+            <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-none tracking-tight"><span data-i18n="homeTitle">GridNova Energy</span></h1>
+            <p class="mt-3 max-w-xl text-sm md:text-base text-white/80 text-left" dir="rtl" data-i18n="homeLede">لوحة تحكم تنفيذية للتقارير اليومية والأسبوعية لأداء HSEQ عبر جميع مشاريع المحطات.</p>
             <div class="mt-7 flex flex-wrap gap-3">
               <button onclick="document.querySelector('[data-tab=&quot;daily&quot;]').click()" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-extrabold text-ink transition hover:bg-brand-100">
-                <i data-lucide="calendar-days" class="h-4 w-4"></i><span data-i18n="homeGoDaily">فتح التقرير اليومي</span></button>
+                <i data-lucide="calendar-days" class="h-4 w-4"></i><span data-i18n="homeGoDaily" dir="rtl">فتح التقرير اليومي</span></button>
               <button onclick="document.querySelector('[data-tab=&quot;weekly&quot;]').click()" class="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-white/15">
-                <i data-lucide="bar-chart-3" class="h-4 w-4"></i><span data-i18n="homeGoWeekly">التقرير الأسبوعي</span></button>
+                <i data-lucide="bar-chart-3" class="h-4 w-4"></i><span data-i18n="homeGoWeekly" dir="rtl">التقرير الأسبوعي</span></button>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@
           </div>
           <div id="projFields"></div>
           <button class="btn-primary" id="saveBtn"><i data-lucide="save" class="w-4 h-4"></i><span data-i18n="saveBtn">حفظ التقرير</span></button>
-          <p class="text-[12px] text-mute mt-3 leading-loose" data-i18n="addHint">يُحسب إجمالي العمالة وتصاريح العمل والملاحظات تلقائياً من بيانات المشاريع أدناه. عند اكتمال 6 أيام عمل ضمن نفس الأسبوع (سبت–خميس) يظهر التقرير الأسبوعي كاملاً تلقائياً. لتعديل تقرير موجود، افتحه من "التقرير اليومي" واضغط "تعديل".</p>
+          <p class="text-[12px] text-mute mt-3 leading-loose" data-i18n="addHint"> إجمالي العمالة وتصاريح العمل والملاحظات تلقائياً من بيانات المشاريع أدناه. عند اكتمال 6 أيام عمل ضمن نفس الأسبوع (سبت–خميس)     . لتعديل تقرير موجود، افتحه من "التقرير اليومي" واضغط "تعديل".</p>
         </div>
       </section>
 
@@ -262,12 +262,12 @@ const I18N = {
     kpiObservations:'إجمالي الملاحظات', kpiRecordable:'حوادث تسجيلية', kpiStoppage:'توقف عمل',
     thProject:'المشروع', thManpower:'العمالة', thPtws:'التصاريح', thProgress:'الإنجاز',
     thActivities:'الأنشطة الرئيسية', thObservations:'الملاحظات', thStatus:'الحالة',
-    badgeNormal:'طبيعي', badgeMonitor:'متابعة', riskMed:'متوسط', riskLow:'منخفض', riskNone:'لا ملاحظات',
+    badgeNormal:'طبيعي', badgeMonitor:'متابعة', riskHigh:'عالية', riskMed:'متوسط', riskLow:'منخفض', riskNone:'لا ملاحظات',
     contractLabel:'عقد رقم', emptyDaily:'لا يوجد تقرير لهذا اليوم بعد. أضِفه من تبويب "إضافة تقرير جديد".',
     weeklyTitle:'الملخص التنفيذي الأسبوعي — HSEQ', weeklySubtitlePrefix:'أداء المشاريع',
     weekCompleteBadge:'✓ أسبوع مكتمل (6 أيام)', weekProgressPrefix:'متابعة —',
     kpiAvgManpower:'متوسط العمالة اليومي', kpiTotalPtws:'إجمالي تصاريح العمل',
-    chartTitle:'توزيع الملاحظات حسب اليوم', legendMed:'متوسطة الخطورة', legendLow:'منخفضة الخطورة',
+    chartTitle:'توزيع الملاحظات حسب اليوم', legendHigh:'عالية الخطورة', legendMed:'متوسطة الخطورة', legendLow:'منخفضة الخطورة',
     trendTitle:'الاتجاه اليومي خلال الأسبوع', thDay:'اليوم', thPtwsCol:'تصاريح العمل', thObsCol:'ملاحظات', thRiskDist:'توزيع المخاطر',
     progressTitle:'تقدّم المشاريع خلال الأسبوع', thWeekStart:'بداية الأسبوع', thWeekEnd:'نهاية الأسبوع', thChange:'التغيّر', flatBadge:'ثابت',
     fillNotePrefix:'⚠ هذا الأسبوع يحتوي حالياً على', fillNoteSuffix:'من أصل 6 أيام عمل. يكتمل التقرير الأسبوعي تلقائياً عند توفر 6 أيام (سبت–خميس).',
@@ -277,7 +277,7 @@ const I18N = {
     phRecordable:'حوادث تسجيلية', phStoppage:'توقف عمل',
     labelManpower:'العمالة', labelPtws:'تصاريح العمل (PTWs)', labelProgress:'نسبة الإنجاز %', labelStatus:'الحالة',
     optNormal:'طبيعي (NORMAL)', optMonitor:'تحت المتابعة (MONITOR)',
-    labelMed:'ملاحظات متوسطة الخطورة', labelLow:'ملاحظات منخفضة الخطورة',
+    labelHigh:'ملاحظات عالية الخطورة', labelMed:'ملاحظات متوسطة الخطورة', labelLow:'ملاحظات منخفضة الخطورة',
     labelActivities:'الأنشطة الرئيسية (سطر لكل نشاط)', phActivities:'مثال: شد وتسليح حديد وتشوين',
     saveBtn:'حفظ التقرير',
     addHint:'يُحسب إجمالي العمالة وتصاريح العمل والملاحظات تلقائياً من بيانات المشاريع أدناه. عند اكتمال 6 أيام عمل ضمن نفس الأسبوع (سبت–خميس) يظهر التقرير الأسبوعي كاملاً تلقائياً. لتعديل تقرير موجود، افتحه من "التقرير اليومي" واضغط "تعديل".',
@@ -317,12 +317,12 @@ const I18N = {
     kpiObservations:'Total Observations', kpiRecordable:'Recordable Incidents', kpiStoppage:'Work Stoppage',
     thProject:'Project', thManpower:'Manpower', thPtws:'PTWs', thProgress:'Progress',
     thActivities:'Key Activities', thObservations:'Observations', thStatus:'Status',
-    badgeNormal:'Normal', badgeMonitor:'Monitor', riskMed:'Medium', riskLow:'Low', riskNone:'No observations',
+    badgeNormal:'Normal', badgeMonitor:'Monitor', riskHigh:'High', riskMed:'Medium', riskLow:'Low', riskNone:'No observations',
     contractLabel:'Contract #', emptyDaily:'No report for this day yet. Add one from the "Add New Report" tab.',
     weeklyTitle:'Weekly Executive Summary — HSEQ', weeklySubtitlePrefix:'Projects Performance',
     weekCompleteBadge:'✓ Week Complete (6 days)', weekProgressPrefix:'In Progress —',
     kpiAvgManpower:'Avg. Daily Manpower', kpiTotalPtws:'Total PTWs Issued',
-    chartTitle:'Observations by Day', legendMed:'Medium Risk', legendLow:'Low Risk',
+    chartTitle:'Observations by Day', legendHigh:'High Risk', legendMed:'Medium Risk', legendLow:'Low Risk',
     trendTitle:'Daily Trend This Week', thDay:'Day', thPtwsCol:'PTWs', thObsCol:'Observations', thRiskDist:'Risk Distribution',
     progressTitle:'Project Progress This Week', thWeekStart:'Week Start', thWeekEnd:'Week End', thChange:'Change', flatBadge:'Flat',
     fillNotePrefix:'⚠ This week currently has', fillNoteSuffix:'of 6 working days. The weekly report completes automatically once 6 days (Sat–Thu) are available.',
@@ -332,7 +332,7 @@ const I18N = {
     phRecordable:'Recordable incidents', phStoppage:'Work stoppage',
     labelManpower:'Manpower', labelPtws:'Work Permits (PTWs)', labelProgress:'Progress %', labelStatus:'Status',
     optNormal:'Normal', optMonitor:'Monitor',
-    labelMed:'Medium Risk Observations', labelLow:'Low Risk Observations',
+    labelHigh:'High Risk Observations', labelMed:'Medium Risk Observations', labelLow:'Low Risk Observations',
     labelActivities:'Key Activities (one per line)', phActivities:'e.g. Steel fixing & shuttering',
     saveBtn:'Save Report',
     addHint:'Total manpower, PTWs and observations are calculated automatically from the project data below. Once 6 working days (Sat–Thu) in the same week are complete, the weekly report appears automatically. To edit an existing report, open it from "Daily Report" and click "Edit".',
@@ -432,6 +432,24 @@ const SEED = [
   khurais:{manpower:32,ptws:3,progress:84,activities:'سحب وترتيب الكابلات\nأعمال العزل المائي\nشدة وتسليح',med:0,low:3,status:'normal'},
   addayir:{manpower:41,ptws:14,progress:44.1,activities:'تركيب مجرى الكابلات AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nتصريح دخول أماكن مغلقة، تنظيف وردم',med:4,low:6,status:'monitor'},
   kfsc:{manpower:28,ptws:2,progress:13.63,activities:'شدة الأساسات وأعمال حديد التسليح\nقص وثني حديد التسليح',med:1,low:2,status:'normal'}
+}},
+{date:'2026-09-03', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:24,ptws:3,progress:17.56,activities:'شد وتسليح حديد وتشوين\nثني وقص حديد التسليح\nأعمال لحام وقص',high:0,med:2,low:3,status:'normal'},
+  alrain:{manpower:33,ptws:4,progress:56,activities:'تركيب شبكة التأريض\nردم ودمك\nأعمال إصلاح\nنظافة عامة للموقع\nتركيب الإنارة',high:0,med:0,low:3,status:'normal'},
+  khurais:{manpower:35,ptws:3,progress:84.01,activities:'سحب وترتيب الكابلات\nتركيب المواسير وترتيب الكابلات\nأعمال الشدة والتسليح',high:0,med:0,low:2,status:'normal'},
+  addayir:{manpower:41,ptws:12,progress:44.1,activities:'تركيب مجرى الكابلات في خنادق AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nالعمل في الأماكن المغلقة (خنادق AC/DC)\nتنظيف وإصلاح ودهان (منطقتين)',high:0,med:1,low:5,status:'normal'},
+  kfsc:{manpower:32,ptws:5,progress:13.63,activities:'شدة وحديد تسليح للأساسات\nتحميل وتفريغ المواد\nنظافة عامة\nتركيب شبكة التأريض\nقص وثني حديد التسليح',high:0,med:0,low:4,status:'normal'}
+}},
+{date:'2026-09-05', recordable:0, stoppage:0, projects:{
+  qurtubah:{manpower:27,ptws:5,progress:18.28,activities:'شد وتسليح حديد وتشوين\nثني وقص ولحام حديد التسليح\nتحميل وتفريغ المواد',high:1,med:0,low:3,status:'monitor'},
+  alrain:{manpower:33,ptws:4,progress:56,activities:'تركيب شبكة التأريض\nردم ودمك\nأعمال إصلاح\nنظافة عامة للموقع\nتركيب الإنارة',high:0,med:1,low:2,status:'normal'},
+  khurais:{manpower:26,ptws:1,progress:84.03,activities:'سحب الكابلات والتوصيل (Glanding)',high:0,med:0,low:3,status:'normal'},
+  addayir:{manpower:43,ptws:13,progress:44.98,activities:'تركيب مجرى الكابلات في خنادق AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nالعمل في الأماكن المغلقة (خنادق AC/DC)\nتنظيف وإصلاح ودهان (منطقتين)\nأعمال لحام CAD',high:0,med:4,low:6,status:'monitor'},
+  kfsc:{manpower:45,ptws:4,progress:13.63,activities:'شدة وحديد تسليح للأساسات\nنظافة عامة\nقص وثني حديد التسليح\nتركيب شبكة التأريض',high:0,med:1,low:4,status:'normal'}
+}},
+{date:'2026-09-06', recordable:0, stoppage:0, projects:{
+  addayir:{manpower:45,ptws:14,progress:44.98,activities:'تركيب مجرى الكابلات في خنادق AC/DC\nأعمال الشدة والفك (منطقتين)\nتركيب وفك السقالات\nالعمل في الأماكن المغلقة (خنادق AC/DC)\nتنظيف وإصلاح ودهان (منطقتين)\nأعمال لحام CAD\nردم وحفر',high:2,med:1,low:4,status:'monitor'},
+  kfsc:{manpower:52,ptws:5,progress:13.63,activities:'شدة وحديد تسليح للأساسات\nنظافة عامة\nتحميل وتفريغ المواد\nقص وثني حديد التسليح\nتركيب شبكة التأريض',high:0,med:0,low:4,status:'normal'}
 }}
 ];
 
@@ -477,17 +495,37 @@ function kpiCard(val,label,icon,tone){
   </div>`;
 }
 
+/* circular (donut) progress indicator for the % column */
+function progressRing(pct){
+  const p = Math.max(0, Math.min(100, Number(pct)||0));
+  const r = 15.5, C = 2 * Math.PI * r;
+  const off = (C * (1 - p/100)).toFixed(1);
+  const col = p >= 75 ? '#12965F' : (p >= 40 ? '#20B277' : '#6BDCAB');
+  return `<span class="inline-flex items-center gap-2">
+    <span class="relative inline-flex h-10 w-10 flex-none items-center justify-center">
+      <svg viewBox="0 0 40 40" class="h-10 w-10 -rotate-90">
+        <circle cx="20" cy="20" r="${r}" fill="none" stroke="#E3E7E3" stroke-width="4"></circle>
+        <circle cx="20" cy="20" r="${r}" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round"
+          stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off}"></circle>
+      </svg>
+      <span class="num absolute text-[9px] font-bold text-ink">${Math.round(p)}</span>
+    </span>
+    <span class="num text-xs font-bold text-ink">${pct}%</span>
+  </span>`;
+}
+
 function computeTotals(entry){
-  let manpower=0, ptws=0, med=0, low=0;
+  let manpower=0, ptws=0, high=0, med=0, low=0;
   PROJECT_TEMPLATE.forEach(p=>{
     const d = entry.projects[p.key];
     if(!d) return;
     manpower += Number(d.manpower)||0;
     ptws += Number(d.ptws)||0;
+    high += Number(d.high)||0;
     med += Number(d.med)||0;
     low += Number(d.low)||0;
   });
-  return {manpower, ptws, med, low, total: med+low, high:0};
+  return {manpower, ptws, high, med, low, total: high+med+low};
 }
 
 function fmtDate(dateStr){
@@ -497,20 +535,23 @@ function fmtDate(dateStr){
 }
 function dowName(i){ return I18N[LANG].dow[i]; }
 
+function ymd(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 function weekKeyFor(dateStr){
   const d = new Date(dateStr+'T00:00:00');
   const dow = d.getDay();
   const diffToSat = (dow + 1) % 7;
   const sat = new Date(d);
   sat.setDate(d.getDate() - diffToSat);
-  return sat.toISOString().slice(0,10);
+  return ymd(sat);
 }
 function weekDates(satStr){
   const sat = new Date(satStr+'T00:00:00');
   const days=[];
   for(let i=0;i<6;i++){
     const dd = new Date(sat); dd.setDate(sat.getDate()+i);
-    days.push(dd.toISOString().slice(0,10));
+    days.push(ymd(dd));
   }
   return days;
 }
@@ -653,8 +694,9 @@ function renderDateRail(){
   });
 }
 
-function riskLine(med, low){
+function riskLine(high, med, low){
   let parts = [];
+  if(high>0) parts.push(`<span class="font-bold text-danger">${high} ${t('riskHigh')}</span>`);
   if(med>0) parts.push(`<span class="font-bold text-amber-dk">${med} ${t('riskMed')}</span>`);
   if(low>0) parts.push(`<span class="font-bold text-brand-700">${low} ${t('riskLow')}</span>`);
   if(parts.length===0) parts.push(`<span class="text-mute">${t('riskNone')}</span>`);
@@ -686,14 +728,9 @@ function renderDaily(){
       <td class="p-3 align-top"><div class="font-bold text-ink">${p.name}</div><div class="mt-0.5 text-[11px] text-mute">${t('contractLabel')} ${p.contract}</div></td>
       <td class="p-3 align-top num text-ink">${d.manpower}</td>
       <td class="p-3 align-top num text-ink">${d.ptws}</td>
-      <td class="p-3 align-top">
-        <div class="flex items-center gap-2">
-          <div class="h-1.5 w-16 overflow-hidden rounded-full bg-line"><div class="h-full rounded-full bg-brand-500" style="width:${Math.min(100, Number(d.progress)||0)}%"></div></div>
-          <span class="num text-xs text-mute">${d.progress}%</span>
-        </div>
-      </td>
+      <td class="p-3 align-top">${progressRing(d.progress)}</td>
       <td class="p-3 align-top space-y-1 text-[13px]">${acts}</td>
-      <td class="p-3 align-top text-[13px]">${riskLine(d.med, d.low)}</td>
+      <td class="p-3 align-top text-[13px]">${riskLine(d.high||0, d.med, d.low)}</td>
       <td class="p-3 align-top">${badge}</td>
     </tr>`;
   });
@@ -716,7 +753,7 @@ function renderDaily(){
       </div>
 
       <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-        ${kpiCard(5, t('kpiProjects'), 'building-2')}
+        ${kpiCard(PROJECT_TEMPLATE.filter(p=>entry.projects[p.key]).length, t('kpiProjects'), 'building-2')}
         ${kpiCard(totals.manpower, t('kpiManpower'), 'users')}
         ${kpiCard(totals.ptws, t('kpiPtws'), 'file-check')}
         ${kpiCard(totals.total, t('kpiObservations'), 'clipboard-list')}
@@ -800,10 +837,10 @@ function renderWeekly(){
       <i data-lucide="info" class="h-4 w-4 flex-none"></i><span>${t('fillNotePrefix')} ${days.length} ${t('fillNoteSuffix')}</span></div>`;
   }
 
-  let sumManpower=0, sumPtws=0, sumMed=0, sumLow=0, sumRecordable=0, sumStoppage=0;
+  let sumManpower=0, sumPtws=0, sumHigh=0, sumMed=0, sumLow=0, sumRecordable=0, sumStoppage=0;
   const dailyRows = days.map(d=>{
     const e = DB[d]; const tt = computeTotals(e);
-    sumManpower+=tt.manpower; sumPtws+=tt.ptws; sumMed+=tt.med; sumLow+=tt.low;
+    sumManpower+=tt.manpower; sumPtws+=tt.ptws; sumHigh+=tt.high; sumMed+=tt.med; sumLow+=tt.low;
     sumRecordable+=e.recordable; sumStoppage+=e.stoppage;
     return {d, info: fmtDate(d), tt};
   });
@@ -816,7 +853,7 @@ function renderWeekly(){
       <td class="p-3 num">${r.tt.manpower}</td>
       <td class="p-3 num">${r.tt.ptws}</td>
       <td class="p-3 num">${r.tt.total}</td>
-      <td class="p-3 text-[13px]">${riskLine(r.tt.med, r.tt.low)}</td>
+      <td class="p-3 text-[13px]">${riskLine(r.tt.high, r.tt.med, r.tt.low)}</td>
     </tr>`).join('');
 
   let projRows = '';
@@ -859,7 +896,7 @@ function renderWeekly(){
         ${kpiCard(5, t('kpiProjects'), 'building-2')}
         ${kpiCard(avgManpower, t('kpiAvgManpower'), 'users')}
         ${kpiCard(sumPtws, t('kpiTotalPtws'), 'file-check')}
-        ${kpiCard(sumMed+sumLow, t('kpiObservations'), 'clipboard-list')}
+        ${kpiCard(sumHigh+sumMed+sumLow, t('kpiObservations'), 'clipboard-list')}
         ${kpiCard(sumRecordable, t('kpiRecordable'), 'alert-octagon', sumRecordable>0?'text-danger':'text-brand-500')}
         ${kpiCard(sumStoppage, t('kpiStoppage'), 'octagon-x', sumStoppage>0?'text-danger':'text-brand-500')}
       </div>
@@ -868,7 +905,8 @@ function renderWeekly(){
         <div class="rounded-2xl border border-line p-4">
           <h3 class="sec-h">/ ${t('chartTitle')}</h3>
           <div class="relative h-[260px]"><canvas id="obsChartCanvas"></canvas></div>
-          <div class="mt-3 flex gap-4 text-xs text-mute">
+          <div class="mt-3 flex flex-wrap gap-4 text-xs text-mute">
+            <span class="inline-flex items-center gap-1.5"><i class="h-2.5 w-2.5 rounded-sm" style="background:#D64545"></i>${t('legendHigh')}</span>
             <span class="inline-flex items-center gap-1.5"><i class="h-2.5 w-2.5 rounded-sm" style="background:#E79B32"></i>${t('legendMed')}</span>
             <span class="inline-flex items-center gap-1.5"><i class="h-2.5 w-2.5 rounded-sm" style="background:#3FC98D"></i>${t('legendLow')}</span>
           </div>
@@ -920,6 +958,7 @@ function renderWeekly(){
       charts.push(new Chart(document.getElementById('obsChartCanvas'), {
         type:'bar',
         data:{ labels, datasets:[
+          {label:t('legendHigh'), data:dailyRows.map(r=>r.tt.high), backgroundColor:'#D64545', borderRadius:4, maxBarThickness:34},
           {label:t('legendMed'), data:dailyRows.map(r=>r.tt.med), backgroundColor:'#E79B32', borderRadius:4, maxBarThickness:34},
           {label:t('legendLow'), data:dailyRows.map(r=>r.tt.low), backgroundColor:'#3FC98D', borderRadius:4, maxBarThickness:34}
         ]},
@@ -1004,6 +1043,7 @@ function resetAddForm(){
     document.getElementById(`p-${p.key}-ptws`).value = '';
     document.getElementById(`p-${p.key}-progress`).value = '';
     document.getElementById(`p-${p.key}-status`).value = 'normal';
+    document.getElementById(`p-${p.key}-high`).value = 0;
     document.getElementById(`p-${p.key}-med`).value = 0;
     document.getElementById(`p-${p.key}-low`).value = 0;
     document.getElementById(`p-${p.key}-activities`).value = '';
@@ -1025,6 +1065,7 @@ function editReport(date){
     document.getElementById(`p-${p.key}-ptws`).value = d.ptws ?? '';
     document.getElementById(`p-${p.key}-progress`).value = d.progress ?? '';
     document.getElementById(`p-${p.key}-status`).value = d.status || 'normal';
+    document.getElementById(`p-${p.key}-high`).value = d.high ?? 0;
     document.getElementById(`p-${p.key}-med`).value = d.med ?? 0;
     document.getElementById(`p-${p.key}-low`).value = d.low ?? 0;
     document.getElementById(`p-${p.key}-activities`).value = d.activities || '';
@@ -1105,7 +1146,8 @@ function renderProjFields(){
           </select>
         </div>
       </div>
-      <div class="mb-3 grid gap-3 sm:grid-cols-2">
+      <div class="mb-3 grid gap-3 sm:grid-cols-3">
+        <div><label class="lbl" data-i18n="labelHigh">ملاحظات عالية الخطورة</label><input type="number" id="p-${p.key}-high" min="0" value="0" class="inp"></div>
         <div><label class="lbl" data-i18n="labelMed">ملاحظات متوسطة الخطورة</label><input type="number" id="p-${p.key}-med" min="0" value="0" class="inp"></div>
         <div><label class="lbl" data-i18n="labelLow">ملاحظات منخفضة الخطورة</label><input type="number" id="p-${p.key}-low" min="0" value="0" class="inp"></div>
       </div>
@@ -1131,6 +1173,7 @@ async function saveReport(){
       ptws: Number(document.getElementById(`p-${p.key}-ptws`).value)||0,
       progress: Number(document.getElementById(`p-${p.key}-progress`).value)||0,
       status: document.getElementById(`p-${p.key}-status`).value,
+      high: Number(document.getElementById(`p-${p.key}-high`).value)||0,
       med: Number(document.getElementById(`p-${p.key}-med`).value)||0,
       low: Number(document.getElementById(`p-${p.key}-low`).value)||0,
       activities: document.getElementById(`p-${p.key}-activities`).value
